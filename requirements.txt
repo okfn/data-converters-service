@@ -1,5 +1,4 @@
 Flask
 requests
 https://github.com/okfn/messytables/archive/master.zip
-Fiona
 https://github.com/okfn/data-converters/archive/master.zip
