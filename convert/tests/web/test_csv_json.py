@@ -53,6 +53,9 @@ class TestCase(TestCase):
         """Test POSTing a file to the API"""
         self.testdata_path = os.path.join(self.config_path, 'testdata', 'csv')
         csv = open(os.path.join(self.testdata_path, 'simple.csv'))
-        res = self.app.post('/api/convert/json', data={'file': csv})
-        assert ('"headers": [{"id": "date"}, {"id": "temperature"}, {"id": "place"}]' in res.data)
-        assert ('{"date": "2011-01-03", "place": "Berkeley", "temperature": "5"}' in res.data)
+        res = self.app.post('/api/convert/json', data={'file': csv, 'type': 'csv'})
+        assert ('"metadata": {"fields": [{"type": "DateTime", "id": "date"}, '
+                '{"type": "Integer", "id": "temperature"}, {"type": "String",'
+                ' "id": "place"}]}' in res.data)
+        assert ('{"date": "2011-01-01 00:00:00", "place": "Galway", '
+                '"temperature": 1}' in res.data)
