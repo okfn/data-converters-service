@@ -13,8 +13,13 @@ class TestCase(TestCase):
         app.config.from_pyfile(os.path.join(config_path, 'test_settings.py'),
                                silent=True)
 
-    def test_1_convert_params(self):
+    def test_1_convert_params_with_url(self):
+        """Test not enough parameters to convert endpoint"""
+        res = self.app.get('api/convert/foo?url=htto://example.com')
+        self.assertEqual('{"error": "No format or type specified"}', res.data)
+
+    def test_1_convert_params_without_url(self):
         """Test not enough parameters to convert endpoint"""
         res = self.app.get('api/convert/foo')
-        self.assertEqual('{"error": "No format or URL specified"}', res.data)
+        self.assertEqual('{"error": "No URL given"}', res.data)
 
