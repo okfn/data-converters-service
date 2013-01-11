@@ -41,7 +41,7 @@ def convert_get(targetformat='json'):
         return error("Could't access the file at {0}".format(url))
     handle = StringIO(r.content)
     try:
-        results, metadata = module.parse(handle, metadata)
+        results, metadata = module.parse(handle, **metadata)
         results_json = json.dumps({'metadata': metadata, 'records': list(results)}, cls=IteratorEncoder)
     except Exception as e:
         return error(str(e))
