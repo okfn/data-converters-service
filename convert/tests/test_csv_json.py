@@ -10,8 +10,8 @@ class TestCase(TestCase):
         here = os.path.dirname(os.path.abspath(__file__))
         self.config_path = os.path.dirname(os.path.dirname(here))
         app.config.from_pyfile(os.path.join(self.config_path, 'settings.py'))
-        app.config.from_pyfile(os.path.join(self.config_path, 'test_settings.py'),
-                               silent=True)
+        app.config.from_pyfile(os.path.join(self.config_path,
+                               'test_settings.py'), silent=True)
 
     def test_1_convert_csv(self):
         """Test converting a CSV to JSON"""
@@ -53,7 +53,8 @@ class TestCase(TestCase):
         """Test POSTing a file to the API"""
         self.testdata_path = os.path.join(self.config_path, 'testdata', 'csv')
         csv = open(os.path.join(self.testdata_path, 'simple.csv'))
-        res = self.app.post('/api/convert/json', data={'file': csv, 'type': 'csv'})
+        res = self.app.post('/api/convert/json', data={'file': csv,
+                            'type': 'csv'})
         assert ('"metadata": {"fields": [{"type": "DateTime", "id": "date"}, '
                 '{"type": "Integer", "id": "temperature"}, {"type": "String",'
                 ' "id": "place"}]}' in res.data)

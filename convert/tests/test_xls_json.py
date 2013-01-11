@@ -9,10 +9,9 @@ class TestCase(TestCase):
         self.app = app.test_client()
         here = os.path.dirname(os.path.abspath(__file__))
         self.config_path = os.path.dirname(os.path.dirname(here))
-        print self.config_path
         app.config.from_pyfile(os.path.join(self.config_path, 'settings.py'))
-        app.config.from_pyfile(os.path.join(self.config_path, 'test_settings.py'),
-                               silent=True)
+        app.config.from_pyfile(os.path.join(self.config_path,
+                               'test_settings.py'), silent=True)
 
     def test_1_convert_xls(self):
         """Test converting a XLS to JSON"""
@@ -35,7 +34,8 @@ class TestCase(TestCase):
         """Test converting a XLSX to JSON"""
         res = self.app.get('/api/convert/json?url='
                            'http://resources.opendatalabs.org/u/nigelb/'
-                           'data-converters/xls/simple.xlsx&type=xls&excel_type=xlsx')
+                           'data-converters/xls/simple.xlsx&type=xls&'
+                           'excel_type=xlsx')
         assert ('"metadata": {"fields": [{"type": "String", "id": "date"}, '
                 '{"type": "Integer", "id": "temperature"}, {"type": "String",'
                 ' "id": "place"}]}' in res.data)
@@ -46,7 +46,8 @@ class TestCase(TestCase):
         """Test POSTing an xls file to the API"""
         self.testdata_path = os.path.join(self.config_path, 'testdata', 'xls')
         xls = open(os.path.join(self.testdata_path, 'simple.xls'))
-        res = self.app.post('/api/convert/json', data={'file': xls, 'type': 'xls'})
+        res = self.app.post('/api/convert/json', data={'file': xls,
+                            'type': 'xls'})
         assert ('"metadata": {"fields": [{"type": "String", "id": "date"}, '
                 '{"type": "Integer", "id": "temperature"}, {"type": "String",'
                 ' "id": "place"}]}' in res.data)
@@ -57,7 +58,8 @@ class TestCase(TestCase):
         """Test POSTing an XLSX file to the API"""
         self.testdata_path = os.path.join(self.config_path, 'testdata', 'xls')
         xls = open(os.path.join(self.testdata_path, 'simple.xlsx'))
-        res = self.app.post('/api/convert/json', data={'file': xls, 'type': 'xls', 'excel_type': 'xlsx'})
+        res = self.app.post('/api/convert/json', data={'file': xls,
+                            'type': 'xls', 'excel_type': 'xlsx'})
         assert ('"metadata": {"fields": [{"type": "String", "id": "date"}, '
                 '{"type": "Integer", "id": "temperature"}, {"type": "String",'
                 ' "id": "place"}]}' in res.data)
