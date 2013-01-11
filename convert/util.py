@@ -13,7 +13,8 @@ def jsonpify(f):
         if callback:
             content = str(callback) + '(' + str(f(*args, **kwargs).data) + ')'
             return current_app.response_class(content,
-                    mimetype='application/javascript')
+                                              mimetype='application/javascript'
+                                              )
         else:
             return f(*args, **kwargs)
     return decorated_function
