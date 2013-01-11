@@ -1,6 +1,7 @@
-from datetime import timedelta
+from datetime import timedelta, datetime
 from functools import update_wrapper, wraps
-from flask import current_app, make_response, request
+import json
+from flask import current_app, make_response, request, Response
 
 
 def jsonpify(f):
@@ -12,7 +13,8 @@ def jsonpify(f):
         if callback:
             content = str(callback) + '(' + str(f(*args, **kwargs).data) + ')'
             return current_app.response_class(content,
-                    mimetype='application/javascript')
+                                              mimetype='application/javascript'
+                                              )
         else:
             return f(*args, **kwargs)
     return decorated_function
@@ -60,3 +62,15 @@ def crossdomain(origin=None, methods=None, headers=None,
         f.provide_automatic_options = False
         return update_wrapper(wrapped_function, f)
     return decorator
+
+
+def error(msg):
+        results = json.dumps({'error': msg})
+        return Response(results, mimetype='application/json')
+
+
+class IteratorEncoder(json.JSONEncoder):
+    def default(self, o):
+        if isinstance(o, datetime):
+            return str(o)
+        return json.JSONEncoder.default(self, o)
