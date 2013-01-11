@@ -2,15 +2,16 @@ import json
 import os
 from StringIO import StringIO
 from tempfile import NamedTemporaryFile, TemporaryFile
+from dataconverters import csv, xls
 import requests
 from werkzeug import secure_filename
 from flask import request, render_template, Response
 from convert import app
-from dataconverters import dataconverter
-from convert.util import crossdomain, jsonpify
+from convert.util import crossdomain, error, IteratorEncoder, jsonpify
 
 
 cors_headers = ['Content-Type', 'Authorization']
+converters = dict(csv=csv, xls=xls)
 
 
 @app.route('/')
@@ -21,39 +22,32 @@ def index():
 @app.route('/api/convert/<targetformat>', methods=['GET'])
 @crossdomain(origin='*', headers=cors_headers)
 @jsonpify
-def convert_get(targetformat=None):
-    results = {}
+def convert_get(targetformat='json'):
     metadata = request.args.to_dict()
-    metadata['api'] = True
-    metadata['target'] = targetformat
+    # Error checking
     url = request.args.get('url', None)
-    if targetformat is None or url is None:
-        results['error'] = 'No format or URL specified'
-        results_json = json.dumps(results)
-        return Response(results_json, mimetype='application/json')
+    originformat = request.args.get('type', None)
+    if url is None:
+        return error('No URL given')
+    if targetformat is None or originformat is None:
+        return error('No format or type specified')
+    module = converters.get(originformat, None)
+    if module is None:
+        return error('No converter found for {0}',format(originformat))
 
-    url = request.args.get('url')
+    # Fetch the url
     r = requests.get(url)
     if requests.codes.ok != r.status_code:
-        results['error'] = "Could't access the file at %s" % url
-        results_json = json.dumps(results)
-        return Response(results_json, mimetype='application/json')
-
-    metadata['mime_type'] = r.headers['content-type']
+        return error("Could't access the file at {0}".format(url))
     handle = StringIO(r.content)
-    with NamedTemporaryFile() as datafile:
-        datafile.write(handle.getvalue())
-        datafile.seek(0)
-        try:
-            data = dataconverter(datafile, metadata)
-            results_json, mimetype = data.convert()
-        except Exception as e:
-            results['error'] = str(e)
-            results_json = json.dumps(results)
-            mimetype='application/json'
-    return Response(results_json, mimetype=mimetype)
+    try:
+        results, metadata = module.parse(handle, metadata)
+        results_json = json.dumps({'metadata': metadata, 'records': list(results)}, cls=IteratorEncoder)
+    except Exception as e:
+        return error(str(e))
+    return Response(results_json, mimetype='application/json')
 
-
+"""
 @app.route('/api/convert/<targetformat>', methods=['POST'])
 @crossdomain(origin='*', headers=cors_headers)
 @jsonpify
@@ -75,4 +69,4 @@ def convert_post(targetformat=None):
         results['error'] = str(e)
         results_json = json.dumps(results)
     return Response(results_json, mimetype='application/json')
-
+"""
