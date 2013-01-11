@@ -45,18 +45,20 @@ class TestCase(TestCase):
         """Test POSTing an xls file to the API"""
         self.testdata_path = os.path.join(self.config_path, 'testdata', 'xls')
         xls = open(os.path.join(self.testdata_path, 'simple.xls'))
-        res = self.app.post('/api/convert/json', data={'file': xls})
-        assert ('"headers": [{"id": "date"}, {"id": "temperature"}, {"id": '
-                '"place"}]' in res.data)
-        assert ('{"date": "2011-01-03T00:00:00", "place": "Berkeley", '
-                '"temperature": 5.0}' in res.data)
+        res = self.app.post('/api/convert/json', data={'file': xls, 'type': 'xls'})
+        assert ('"metadata": {"fields": [{"type": "String", "id": "date"}, '
+                '{"type": "Integer", "id": "temperature"}, {"type": "String",'
+                ' "id": "place"}]}' in res.data)
+        assert ('{"date": "2011-01-01 00:00:00", "place": "Galway", '
+                '"temperature": 1.0}' in res.data)
 
     def test_3_post_xlsx_file(self):
         """Test POSTing an XLSX file to the API"""
         self.testdata_path = os.path.join(self.config_path, 'testdata', 'xls')
         xls = open(os.path.join(self.testdata_path, 'simple.xlsx'))
-        res = self.app.post('/api/convert/json', data={'file': xls})
-        assert ('"headers": [{"id": "date"}, {"id": "temperature"}, {"id": '
-                '"place"}]' in res.data)
-        assert ('{"date": "2011-01-03T00:00:00", "place": "Berkeley", '
+        res = self.app.post('/api/convert/json', data={'file': xls, 'type': 'xls', 'excel_type': 'xlsx'})
+        assert ('"metadata": {"fields": [{"type": "String", "id": "date"}, '
+                '{"type": "Integer", "id": "temperature"}, {"type": "String",'
+                ' "id": "place"}]}' in res.data)
+        assert ('{"date": "2011-01-03 00:00:00", "place": "Berkeley", '
                 '"temperature": 5}' in res.data)
