@@ -21,14 +21,14 @@ class TestCase(TestCase):
         assert ('"metadata": {"fields": [{"type": "DateTime", "id": "date"}, '
                 '{"type": "Integer", "id": "temperature"}, {"type": "String",'
                 ' "id": "place"}]}' in res.data)
-        assert ('{"date": "2011-01-01T00:00:00", "place": "Galway", '
+        assert ('{"date": "2011-01-01 00:00:00", "place": "Galway", '
                 '"temperature": 1}' in res.data)
 
     def test_2_unicode_csv(self):
         """Test converting a CSV with unicode chars to JSON"""
         res = self.app.get('/api/convert/json?url='
                            'http://resources.opendatalabs.org/u/nigelb/'
-                           'data-converters/csv/spanish_chars.csv')
+                           'data-converters/csv/spanish_chars.csv&type=csv')
         assert ('"metadata": {"fields": [{"type": "Integer", "id": "GF_ID"}, '
                 '{"type": "Integer", "id": "FN_ID"}, {"type": "Integer", '
                 '"id": "SF_ID"}, {"type": "String", "id": "GF"}, {"type": '
