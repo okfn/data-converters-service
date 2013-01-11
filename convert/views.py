@@ -1,10 +1,7 @@
 import json
-import os
 from StringIO import StringIO
-from tempfile import NamedTemporaryFile, TemporaryFile
 from dataconverters import csv, xls
 import requests
-from werkzeug import secure_filename
 from flask import request, render_template, Response
 from convert import app
 from convert.util import crossdomain, error, IteratorEncoder, jsonpify
@@ -34,7 +31,7 @@ def convert_get(targetformat='json'):
         return error('No format or type specified')
     module = converters.get(originformat, None)
     if module is None:
-        return error('No converter found for {0}',format(originformat))
+        return error('No converter found for {0}'.format(originformat))
 
     # Fetch the url
     r = requests.get(url)
@@ -45,7 +42,8 @@ def convert_get(targetformat='json'):
     handle = StringIO(r.content)
     try:
         results, metadata = module.parse(handle, **metadata)
-        results_json = json.dumps({'metadata': metadata, 'records': list(results)}, cls=IteratorEncoder)
+        results_json = json.dumps({'metadata': metadata, 'records': list(
+                                  results)}, cls=IteratorEncoder)
     except Exception as e:
         return error(str(e))
     return Response(results_json, mimetype='application/json')
@@ -66,12 +64,13 @@ def convert_post(targetformat='json'):
         return error('No format or type specified')
     module = converters.get(originformat, None)
     if module is None:
-        return error('No converter found for {0}',format(originformat))
+        return error('No converter found for {0}'.format(originformat))
 
     # Convert
     try:
         results, metadata = module.parse(uploaded_file.stream, **metadata)
-        results_json = json.dumps({'metadata': metadata, 'records': list(results)}, cls=IteratorEncoder)
+        results_json = json.dumps({'metadata': metadata, 'records': list(
+                                  results)}, cls=IteratorEncoder)
     except Exception as e:
         return error(str(e))
     return Response(results_json, mimetype='application/json')
