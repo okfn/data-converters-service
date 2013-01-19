@@ -1,4 +1,4 @@
 Flask
 requests
 messytables
-https://github.com/okfn/data-converters/archive/master.zip
+https://github.com/okfn/dataconverters/archive/master.zip
