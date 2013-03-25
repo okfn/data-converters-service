@@ -1,4 +1,5 @@
 from datetime import timedelta, datetime
+from decimal import Decimal
 from functools import update_wrapper, wraps
 import json
 from flask import current_app, make_response, request, Response
@@ -71,6 +72,6 @@ def error(msg):
 
 class IteratorEncoder(json.JSONEncoder):
     def default(self, o):
-        if isinstance(o, datetime):
+        if isinstance(o, datetime) or isinstance(o, Decimal):
             return str(o)
         return json.JSONEncoder.default(self, o)
