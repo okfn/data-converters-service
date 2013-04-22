@@ -1,14 +1,15 @@
 import json
 from StringIO import StringIO
-from dataconverters import csv, xls
+from dataconverters import commas, xls
 import requests
 from flask import request, render_template, Response
 from convert import app
 from convert.util import crossdomain, error, IteratorEncoder, jsonpify
+from convert import xlsx
 
 
 cors_headers = ['Content-Type', 'Authorization']
-converters = dict(csv=csv, xls=xls)
+converters = dict(csv=commas, xls=xls, xlsx=xlsx)
 
 
 @app.route('/')
